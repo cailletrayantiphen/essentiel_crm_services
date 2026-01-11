@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Détail du Particulier - Essentiel CRM Services{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-user me-2"></i> {{ particulier.prenom }} {{ particulier.nom }}</h2>
+        <div class="d-flex gap-2">
+            <a href="{% url 'particulier_update' particulier.pk %}" class="btn btn-primary">
+                <i class="fas fa-edit me-2"></i> Modifier
+            </a>
+            <a href="{% url 'particulier_delete' particulier.pk %}" class="btn btn-danger">
+                <i class="fas fa-trash-alt me-2"></i> Supprimer
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <h5 class="card-title mb-3"><i class="fas fa-info-circle me-2"></i> Informations du particulier</h5>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <tbody>
+                        <tr>
+                            <th scope="row">Civilité</th>
+                            <td>{{ particulier.get_civilite_display|default:"Non spécifié" }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Prénom</th>
+                            <td>{{ particulier.prenom }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Nom</th>
+                            <td>{{ particulier.nom }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Date de naissance</th>
+                            <td>{{ particulier.date_de_naissance|date:"d/m/Y"|default:"Non spécifiée" }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">E-mail</th>
+                            <td>{{ particulier.email }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Téléphone</th>
+                            <td>{{ particulier.telephone }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Adresse</th>
+                            <td>{{ particulier.adresse|default:"Non spécifiée" }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Ville</th>
+                            <td>{{ particulier.ville|default:"Non spécifiée" }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Code Postal</th>
+                            <td>{{ particulier.code_postal|default:"Non spécifié" }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Pays</th>
+                            <td>{{ particulier.pays|default:"Non spécifié" }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Source</th>
+                            <td>{{ particulier.get_source_display|default:"Non spécifiée" }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Type de relation</th>
+                            <td>{{ particulier.get_type_relation_display|default:"Non spécifié" }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Notes supplémentaires</th>
+                            <td>{{ particulier.notes_supplementaires|default:"Non spécifiées" }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Créé le</th>
+                            <td>{{ particulier.date_creation|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Dernière mise à jour</th>
+                            <td>{{ particulier.date_mise_a_jour|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{% url 'particulier_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Retour à la liste
+        </a>
+    </div>
+{% endblock %}

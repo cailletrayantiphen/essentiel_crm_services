@@ -1,0 +1,1 @@
+from utils.permissions import est_administrateur

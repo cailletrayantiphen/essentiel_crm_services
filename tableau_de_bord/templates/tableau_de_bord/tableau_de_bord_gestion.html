@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Tableau de bord de Gestion - Essentiel CRM Services{% endblock %}
+
+{% block content %}
+    <h2 class="mb-4">
+        <i class="fas fa-chart-bar me-2"></i> Tableau de bord de gestion
+    </h2>
+
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-warning shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Valeur du Pipeline</h5>
+                    <p class="card-text h1">{{ pipeline_total|floatformat:2 }} MAD</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-success shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Chiffre d'affaires total</h5>
+                    <p class="card-text h1">{{ ca_total|floatformat:2 }} MAD</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-info shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Taux de conversion global</h5>
+                    <p class="card-text h1">{{ taux_conversion|floatformat:2 }}%</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-primary shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Total Opportunités</h5>
+                    <p class="card-text h1">{{ total_opportunites }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-dark shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Total Clients</h5>
+                    <p class="card-text h1">{{ nombre_clients }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="mt-4 mb-4">
+
+    <h3><i class="fas fa-chart-pie me-2"></i> Répartition des données</h3>
+    <div class="row mt-4">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Opportunités par statut</h5>
+                    <canvas id="opportunitiesChart"
+                        data-labels='[{% for item in opportunites_par_statut %}"{{ item.statut|title }}"{% if not forloop.last %},{% endif %}{% endfor %}]'
+                        data-data='[{% for item in opportunites_par_statut %}{{ item.count }}{% if not forloop.last %},{% endif %}{% endfor %}]'
+                        data-colors='[{% for item in opportunites_par_statut %}"{{ item.color }}"{% if not forloop.last %},{% endif %}{% endfor %}]'
+                    ></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Services les plus vendus</h5>
+                    <canvas id="servicesChart"
+                        data-labels='[{% for item in services_vendus %}"{{ item.nom }}"{% if not forloop.last %},{% endif %}{% endfor %}]'
+                        data-data='[{% for item in services_vendus %}{{ item.ventes }}{% if not forloop.last %},{% endif %}{% endfor %}]'
+                    ></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12 mb-4">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Ventes par catégorie</h5>
+                    <canvas id="categoriesChart"
+                        data-labels='[{% for item in services_vendus_par_categorie %}"{{ item.categorie__nom }}"{% if not forloop.last %},{% endif %}{% endfor %}]'
+                        data-data='[{% for item in services_vendus_par_categorie %}{{ item.ventes }}{% if not forloop.last %},{% endif %}{% endfor %}]'
+                    ></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <h3><i class="fas fa-history me-2"></i> Les 5 dernières opportunités</h3>
+    {% if opportunites_recentes %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover shadow-sm">
+            <thead class="bg-light">
+                <tr>
+                    <th>Client</th>
+                    <th>Responsable</th>
+                    <th>Montant</th>
+                    <th>Statut</th>
+                    <th>Date de création</th>
+                    <th>Dernière mise à jour</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for opportunite in opportunites_recentes %}
+                <tr>
+                    <td>{{ opportunite.client_particulier|default:opportunite.client_entreprise }}</td>
+                    <td>{{ opportunite.responsable.first_name }} {{ opportunite.responsable.last_name }}</td>
+                    <td>{{ opportunite.montant|floatformat:2 }} MAD</td>
+                    <td>{{ opportunite.get_statut_display }}</td>
+                    <td>{{ opportunite.date_creation|date:"d M Y H:i" }}</td>
+                    <td>{{ opportunite.date_mise_a_jour|date:"d M Y H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info mt-4" role="alert">
+        <i class="fas fa-info-circle me-2"></i> Aucune opportunité récente n'a été trouvée.
+    </div>
+    {% endif %}
+{% endblock %}

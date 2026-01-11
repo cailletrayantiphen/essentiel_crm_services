@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Liste des Opportunités - Essentiel CRM{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="fas fa-handshake me-2"></i> Liste des Opportunités
+        </h2>
+        <a href="{% url 'opportunite_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i> Créer une nouvelle Opportunité
+        </a>
+    </div>
+
+    <div class="mb-3">
+        <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#filterForm" aria-expanded="false" aria-controls="filterForm">
+            <i class="fas fa-filter me-2"></i> Afficher/Masquer les filtres
+        </button>
+    </div>
+
+    <div class="collapse" id="filterForm">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">Rechercher et filtrer</h5>
+            </div>
+            <div class="card-body">
+                <form method="get">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">{{ filter.form.nom.label }}:</label>
+                            {{ filter.form.nom }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">{{ filter.form.statut.label }}:</label>
+                            {{ filter.form.statut }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">{{ filter.form.service.label }}:</label>
+                            {{ filter.form.service }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">{{ filter.form.client_particulier.label }}:</label>
+                            {{ filter.form.client_particulier }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">{{ filter.form.client_entreprise.label }}:</label>
+                            {{ filter.form.client_entreprise }}
+                        </div>
+                        {% if peut_voir_responsable %}
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">{{ filter.form.responsable.label }}:</label>
+                            {{ filter.form.responsable }}
+                        </div>
+                        {% endif %}
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">{{ filter.form.date_creation.label }}:</label>
+                            <div class="d-flex gap-2">
+                                {{ filter.form.date_creation }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">{{ filter.form.date_mise_a_jour.label }}:</label>
+                            <div class="d-flex gap-2">
+                                {{ filter.form.date_mise_a_jour }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end align-items-end mt-3">
+                        <button type="submit" class="btn btn-info me-2"><i class="fas fa-search me-1"></i> Rechercher</button>
+                        <a href="{% url 'opportunite_list' %}" class="btn btn-secondary"><i class="fas fa-eraser me-1"></i> Réinitialiser</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="badge bg-secondary p-2">Nombre total d'opportunités : {{ total_opportunites }}</span>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body">
+            {% if filter.qs %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Nom de l'opportunité</th>
+                            <th>Statut</th>
+                            <th>Montant</th>
+                            <th>Client</th>
+                            <th>Service</th>
+                            {% if peut_voir_responsable %}
+                            <th>Responsable</th>
+                            {% endif %}
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for opportunite in filter.qs %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'opportunite_detail' opportunite.pk %}" class="text-decoration-none">
+                                    {{ opportunite.nom }}
+                                </a>
+                            </td>
+                            <td>{{ opportunite.get_statut_display }}</td>
+                            <td>
+                                {% if opportunite.montant %}
+                                    {{ opportunite.montant }} MAD
+                                {% else %}
+                                    <em class="text-muted">Non spécifié</em>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if opportunite.client_particulier %}
+                                    <a href="{% url 'particulier_detail' opportunite.client_particulier.pk %}" class="text-decoration-none">
+                                        {{ opportunite.client_particulier.prenom }} {{ opportunite.client_particulier.nom }}
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'entreprise_detail' opportunite.client_entreprise.pk %}" class="text-decoration-none">
+                                        {{ opportunite.client_entreprise.nom_entreprise }}
+                                    </a>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if opportunite.service %}
+                                    {{ opportunite.service.nom }}
+                                {% else %}
+                                    <em class="text-muted">Non spécifié</em>
+                                {% endif %}
+                            </td>
+                            {% if peut_voir_responsable %}
+                            <td>
+                                {% if opportunite.responsable %}
+                                {{ opportunite.responsable.first_name }} {{ opportunite.responsable.last_name }}
+                                {% else %}
+                                Non attribué
+                                {% endif %}
+                            </td>
+                            {% endif %}
+                            <td class="text-center text-nowrap">
+                                <a href="{% url 'opportunite_detail' opportunite.pk %}" class="btn btn-info btn-sm" title="Voir les détails">
+                                    <i class="fas fa-eye me-1"></i>Détails
+                                </a>
+                                <a href="{% url 'opportunite_update' opportunite.pk %}" class="btn btn-warning btn-sm" title="Modifier">
+                                    <i class="fas fa-edit me-1"></i>Modifier
+                                </a>
+                                <a href="{% url 'opportunite_delete' opportunite.pk %}" class="btn btn-danger btn-sm" title="Supprimer">
+                                    <i class="fas fa-trash-alt me-1"></i>Supprimer
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info" role="alert">
+                <p class="mb-0">Aucune opportunité ne correspond à votre recherche.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
